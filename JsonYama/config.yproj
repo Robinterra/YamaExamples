@@ -1,0 +1,25 @@
+//comment this line if a Raspberry Pi is available:
+Target:"runtime"
+
+
+//and include the following three lines if a Raspberry Pi is available:
+//Target:"arm-a32-linux"
+//Skip:0x10000
+//OSHeader:"Linux"
+
+StartNamespace:"Program"
+
+Out:"bin/out.yexe"
+IROut:"bin/out.ir"
+AsmOut:"bin/out.S"
+
+Source:"src/"
+
+// Reflection is required by json library
+ReflectionActive:true
+
+// Json Library
+package: {
+    git.repository:"https://github.com/Robinterra/jsonyama.git"
+    git.branch:"master"
+}

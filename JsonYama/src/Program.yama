@@ -1,0 +1,135 @@
+namespace "Program"
+{
+    using "System";
+    using "System.Text";
+    using "System.IO";
+    using "System.Runtime";
+    using "System.Reflection";
+    using "System.Collections";
+    using "System.Runtime.IO";
+
+    public static class Program
+    {
+
+        static int main(Array array)
+        {
+            Program.SaveJsonExample();
+            Program.LoadJsonExample();
+
+            return 0;
+        }
+
+        static bool AddAEmployee(int id, &List<Employee> employees)
+        {
+            Employee employee = new Employee();
+            employee.Id = id;
+
+            String idText = id.ToString();
+            String name = "Robin " + idText.Content;
+            employee.Name = name;
+
+            employees.Add(employee);
+
+            return true;
+        }
+
+        static int LoadJsonExample()
+        {
+            int fileflags = FileFlags.ReadOnly;
+            FileStream stream = new FileStream("output.json", fileflags);
+            stream.ReadNext();
+            ByteArray daten = stream.ReadToEnd();
+            RefString refstr = RefString.Pack(daten as string);
+
+            TypeInfo employeeType = typeof<DatenObject>;
+            JsonDeserilaizeResponse response = JsonSerializer.DeSerialize(refstr, employeeType);
+
+            daten = ~daten;
+
+            if (!response.IsSuccess)
+            {
+                String col = response.TokenNumber.ToString();
+                Console.Print(col.Content);
+                Console.PrintLine(response.Message)
+
+                return 1;
+            }
+
+            DatenObject datenObj = response.Result as DatenObject;
+            if (datenObj is null) return 2;
+
+            List<Employee> employees = datenObj.Employees;
+            if (employees is null) return 3;
+            for (int i = 0; i < employees.Length; i = i + 1)
+            {
+                &Employee employee = employees.Get(i);
+                if (employee is null) return 42;
+
+                Console.Print("Name: ");
+                Console.PrintLine(employee.Name.Content);
+            }
+
+            string msg = response.Message;
+
+            return 0;
+        }
+
+        static int SaveJsonExample()
+        {
+            List<Employee> employees = new List<Employee>();
+
+            for (int i = 0; i < 0x9; i = i + 1)
+            {
+                Program.AddAEmployee(i, employees);
+            }
+
+            DatenObject datenObject = new DatenObject();
+            datenObject.Employees = employees;
+
+            TypeInfo employeeType = typeof<DatenObject>;
+
+            int fileflags = FileFlags.ReadWrite;
+            fileflags = fileflags | FileFlags.Create;
+            fileflags = fileflags | FileFlags.Truncate;
+            FileStream stream = new FileStream("output.json", fileflags);
+            JsonSerializer.Serialize(stream, datenObject, employeeType);
+
+            Console.PrintLine("Employees Serialisert");
+
+            return 0;
+        }
+
+    }
+
+    public class Employee
+    {
+        public int Id;
+        public String Name;
+
+        public this new()
+        {
+
+        }
+
+        public this ~()
+        {
+
+        }
+    }
+
+    public class DatenObject
+    {
+        public List<Employee> Employees;
+
+        public this new()
+        {
+            return this;
+        }
+
+        public this ~()
+        {
+
+        }
+
+    }
+}
