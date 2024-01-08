@@ -1,11 +1,11 @@
 //comment this line if a Raspberry Pi is available:
-Target:"runtime"
+//Target:"runtime"
 
 
 //and include the following three lines if a Raspberry Pi is available:
-//Target:"arm-a32-linux"
-//Skip:0x10000
-//OSHeader:"Linux"
+Target:"arm-a32-linux"
+Skip:0x10000
+OSHeader:"Linux"
 
 StartNamespace:"Program"
 

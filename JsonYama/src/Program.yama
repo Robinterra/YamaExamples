@@ -71,6 +71,10 @@ namespace "Program"
 
             string msg = response.Message;
 
+            Console.PrintLine("Employees Deserialisert");
+
+            if (msg isnot null) Console.PrintLine(msg);
+
             return 0;
         }
 

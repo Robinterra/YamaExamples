@@ -1,0 +1,42 @@
+namespace "Program"
+{
+    using "System";
+    using "System.IO";
+    using "System.Runtime";
+
+    public class ConsoleLogger
+    {
+
+        #region ctor
+
+        public this new()
+        {
+
+        }
+
+        public this ~()
+        {
+
+        }
+
+        #endregion ctor
+
+        #region methods
+
+        public bool Info(string msg)
+        {
+            Console.Print("[INFO] ");
+            Console.PrintLine(msg);
+
+            return true;
+        }
+
+        public bool Info(String msg)
+        {
+            return this.Info(msg.Content);
+        }
+
+        #endregion methods
+
+    }
+}

@@ -1,0 +1,113 @@
+namespace "Program"
+{
+    using "System";
+    using "System.IO";
+    using "System.Time";
+    using "ARM.Pi";
+    using "System.Gpio";
+    using "System.Runtime";
+    //using "System.Collections";
+
+    public class GanymedController
+    {
+
+        #region vars
+
+        private GpioPin pumpenRelay;
+        private GpioPin pumpenEinAus;
+        private GpioPin lampenRelay;
+
+        private int ignoreButtonTime;
+
+        private bool isPumpeAn;
+        private bool isLampeAn;
+
+        #endregion vars
+
+        #region methods
+
+        public bool SwapPumpeWhenButtonClicked(DateTime now)
+        {
+            int currentTime = now as int;
+            if (currentTime < this.ignoreButtonTime) return false;
+
+            int q = this.pumpenEinAus.Read();
+            if (q != PinValue.High) return false;
+
+            this.ignoreButtonTime = currentTime + 2;
+
+            if (this.isPumpeAn)
+            {
+                this.isPumpeAn = false;
+                this.pumpenRelay.Write(PinValue.High);
+
+                return true;
+            }
+
+            this.DoPumpeAn();
+
+            return true;
+        }
+
+        private bool DoPumpeAn()
+        {
+            this.isPumpeAn = true;
+            this.pumpenRelay.Write(PinValue.Low);
+
+            return true;
+        }
+
+        public bool LightCheck(DateTime now)
+        {
+            int currentHour = now.Hour;
+            if (currentHour > 19)
+            {
+                if (!this.isLampeAn) return true;
+                this.isLampeAn = false;
+
+                this.lampenRelay.Write(PinValue.High);
+                this.DoPumpeAn();
+
+                return true;
+            }
+            if (currentHour > 4)
+            {
+                if (this.isLampeAn) return true;
+                this.isLampeAn = true;
+
+                this.lampenRelay.Write(PinValue.Low);
+                this.DoPumpeAn();
+
+                return true;
+            }
+
+            return true;
+        }
+
+        #endregion methods
+
+        #region ctor
+
+        public this new(GpioPin pumpenRelay, GpioPin pumpenEinAus, GpioPin lampenRelay)
+        {
+            lampenRelay.Write(PinValue.High);
+            this.isLampeAn = false;
+
+            this.pumpenRelay = pumpenRelay;
+            this.pumpenEinAus = pumpenEinAus;
+            this.lampenRelay = lampenRelay;
+
+            this.DoPumpeAn();
+
+            return this;
+        }
+
+        public this ~()
+        {
+
+        }
+
+        #endregion ctor
+
+    }
+}

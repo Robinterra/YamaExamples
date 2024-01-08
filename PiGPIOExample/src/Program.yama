@@ -1,0 +1,69 @@
+namespace "Program"
+{
+    using "System";
+    using "System.IO";
+    using "System.Time";
+    using "ARM.Pi";
+    using "System.Gpio";
+    using "System.Runtime";
+    //using "System.Collections";
+
+    public static class Program
+    {
+
+        static int main()
+        {
+            PiGpioService service = new PiGpioService(PiVariante.Pi3);
+            GpioController controller = new GpioController(service as IGpioService);
+            ConsoleLogger log = new ConsoleLogger();
+
+            GpioPin pumpenRelay = controller.OpenPin(3, PinMode.Write);
+            GpioPin pumpenEinAus = controller.OpenPin(5, PinMode.Read);
+            GpioPin lampenRelay = controller.OpenPin(2, PinMode.Write);
+
+            GanymedController ganymedController = new GanymedController(pumpenRelay, pumpenEinAus, lampenRelay);
+
+            Program.Run(ganymedController, log);
+
+            return 0;
+        }
+
+        static bool StartInfo(&ConsoleLogger log)
+        {
+            DateTime zahl = InputOutput.Time();
+            int hour = zahl.Hour;
+            String stunde = hour.ToString();
+
+            log.Info(string.Concat("Ganymade wurde um ", stunde.Content, " Uhr gestartet"));
+
+            return true;
+        }
+
+        static bool Run(&GanymedController controller, &ConsoleLogger log)
+        {
+            Program.StartInfo(log);
+
+            while(true)
+            {
+                DateTime time = InputOutput.Time();
+
+                Program.Loop(controller, time);
+            }
+
+            return true;
+        }
+
+        static bool Loop(&GanymedController controller, DateTime now)
+        {
+            controller.SwapPumpeWhenButtonClicked(now);
+
+            controller.LightCheck(now);
+
+            return true;
+        }
+
+
+
+    }
+
+}
